@@ -21,6 +21,8 @@ import utils.InitialiseWeightsNormal;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Test {
+
+
     /**
      * Compute train & test on the 3 different operators on the MLP.
      * <p>
@@ -43,6 +45,8 @@ public class Test {
      * If you do the All Operators :
      * outputSize : 91
      *
+     * @param args
+     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
 
