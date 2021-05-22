@@ -19,7 +19,7 @@ public abstract class INeuron {
 
     public abstract double forward(double[] X) throws AiException;
 
-    public abstract double[] backward(double dy, double[] grads) throws AiExceptionBackward;
+    public abstract double[] backward(double dy, double[] grads) throws Exception;
 
     public abstract int getWSize();
 }

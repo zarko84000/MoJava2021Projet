@@ -96,7 +96,7 @@ public class NeuronLinear extends INeuron {
      * @throws AiExceptionBackward when dxt is null or when dxt have a length diffrent than w.
      */
     @Override
-    public double[] backward(double dy, double[] dxt) throws AiExceptionBackward {
+    public double[] backward(double dy, double[] dxt) throws Exception {
         if (dxt == null) throw new AiExceptionBackward("double[] dxt is null in ", ErrorLevel.NEURON);
         if (dxt.length != w.length)
             throw new AiExceptionBackward("double[] dxt have a length different than w in ", ErrorLevel.NEURON);

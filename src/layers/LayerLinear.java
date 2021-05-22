@@ -104,7 +104,7 @@ public class LayerLinear extends ILayer<NeuronLinear> {
      * @throws AiExceptionBackward throw when dy is null or empty.
      */
     @Override
-    public double[] backward(double[] dy) throws AiExceptionBackward {
+    public double[] backward(double[] dy) throws Exception {
         if (dy == null) throw new AiExceptionBackward("dy is null in ", ErrorLevel.LAYER);
         if (dy.length <= 0) throw new AiExceptionBackward("dy length is equal or under 0 in ", ErrorLevel.LAYER);
 

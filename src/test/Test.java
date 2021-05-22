@@ -13,6 +13,8 @@ import losses.LossDifference;
 
 import models.MLP;
 import transfertFunctions.ITransfertFunction;
+import transfertFunctions.TransfertFunctionLeakyRelu;
+
 import transfertFunctions.TransfertFunctionSigmoid;
 import transfertFunctions.TransfertFunctionTanh;
 import utils.InitialiseBiasNormal;
@@ -69,8 +71,8 @@ public class Test {
         validationOneOperator(modelSubtraction, 1_000, 2);
         */
 
-        MLP modelAll = initModel(2, 128, 0.01, new ITransfertFunction[]
-                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 91, 3);
+        MLP modelAll = initModel(1, new int [] {128}, 0.01, new ITransfertFunction[]
+                {new TransfertFunctionLeakyRelu(0.01), new TransfertFunctionSigmoid()}, 91, 3);
 
         trainAllOperators(modelAll, 1_000_000);
         validationAllOperators(modelAll, 10_000);
@@ -86,37 +88,38 @@ public class Test {
      * @param inputSize     size of the input
      * @return MLP model
      */
-    public static MLP initModel(int nbHiddenLayers, int hiddenSize, double lr, ITransfertFunction[] tfArray, int outputSize, int inputSize) throws Exception {
+    public static MLP initModel(int nbHiddenLayers, int[] hiddenSize, double lr, ITransfertFunction[] tfArray, int outputSize, int inputSize) throws Exception {
         if (nbHiddenLayers <= 0) throw new Exception("nbHiddenLayers is <= 0 in initModel function from Test file");
-        if (hiddenSize <= 0) throw new Exception("hiddenSize is <= 0 in initModel function from Test file");
+        if (nbHiddenLayers+1 != tfArray.length) throw new Exception("nbHiddenLayers+1 != tfArray.length in initModel function from Test file");
+        if (hiddenSize == null) throw new Exception("hiddenSize is null in initModel function from Test file");
         if (lr < 0) throw new Exception("lr is < 0 in initModel function from Test file");
         if (tfArray == null) throw new Exception("tfArray is null in initModel function from Test file");
-        if (tfArray.length != nbHiddenLayers)
+        if (tfArray.length != nbHiddenLayers+1)
             throw new Exception("tfArray.length != nbHiddenLayers in initModel function from Test file");
         if (outputSize <= 0) throw new Exception("outputSize <= 0 in initModel function from Test file");
         if (inputSize <= 0) throw new Exception("inputSize <= 0 in initModel function from Test file");
 
-        LayerLinear[] layers = new LayerLinear[nbHiddenLayers];
+        LayerLinear[] layers = new LayerLinear[nbHiddenLayers+1];
 
 
         layers[0] = new LayerLinear(
-                inputSize, hiddenSize, lr,
+                inputSize, hiddenSize[0], lr,
                 new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[0]
         );
 
-        for (int i = 1; i < nbHiddenLayers - 1; i++) {
+        for (int i = 1; i < nbHiddenLayers ; i++) {
             layers[i] = new LayerLinear(
-                    hiddenSize, hiddenSize, lr,
+                    hiddenSize[i-1], hiddenSize[i], lr,
                     new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[i]
             );
         }
 
-        layers[nbHiddenLayers - 1] = new LayerLinear(
-                hiddenSize, outputSize, lr,
-                new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[nbHiddenLayers - 1]
+        layers[nbHiddenLayers] = new LayerLinear(
+                hiddenSize[nbHiddenLayers - 1], outputSize, lr,
+                new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[nbHiddenLayers]
         );
 
-        System.out.println(layers.length);
+
 
         return new MLP(layers, new LossDifference());
     }

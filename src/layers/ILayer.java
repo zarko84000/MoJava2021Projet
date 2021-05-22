@@ -10,7 +10,6 @@
 package layers;
 
 import exceptions.AiException;
-import exceptions.AiExceptionBackward;
 
 import java.util.*;
 
@@ -28,7 +27,7 @@ public abstract class ILayer<INeuron> implements List<INeuron> {
 
     abstract double[] forward(double[] input) throws AiException;
 
-    abstract double[] backward(double[] dy) throws AiExceptionBackward;
+    abstract double[] backward(double[] dy) throws Exception;
 
 
     /**

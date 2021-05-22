@@ -14,5 +14,5 @@ package transfertFunctions;
 public interface ITransfertFunction {
     double ft(double v);
 
-    double dft(double v);
+    double dft(double v) throws Exception;
 }
