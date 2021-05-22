@@ -10,7 +10,6 @@ package neurons;
 
 
 import exceptions.AiException;
-import exceptions.AiExceptionBackward;
 
 /**
  * Implementation of abstract class INeuron that define the main methods.

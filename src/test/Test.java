@@ -99,6 +99,10 @@ public class Test {
         if (outputSize <= 0) throw new Exception("outputSize <= 0 in initModel function from Test file");
         if (inputSize <= 0) throw new Exception("inputSize <= 0 in initModel function from Test file");
 
+        for(int i=0; i< tfArray.length; i++) {
+            if (tfArray[i] == null) throw new Exception("null object in tfArray from Test.initModel");
+        }
+
         LayerLinear[] layers = new LayerLinear[nbHiddenLayers+1];
 
 
@@ -183,19 +187,19 @@ public class Test {
 
     /**
      * @param model           MLP model that need to be init manually or with initModel(...) function.
-     * @param n_iter          Numbers of examples for training our model.
+     * @param epochs          Numbers of examples for training our model.
      * @param typeOfOperation 0 == Addition, 1 == Multiplication and 2 and + is for subtraction.
      * @throws Exception throw when n_iter is negative, MLP model is null or when typeOfOperation is bellow 0.
      */
-    public static void validationOneOperator(MLP model, int n_iter, int typeOfOperation) throws Exception {
-        if (n_iter < 0) throw new Exception("n_iter is negative in tranOneOperation from Test file");
+    public static void validationOneOperator(MLP model, int epochs, int typeOfOperation) throws Exception {
+        if (epochs < 0) throw new Exception("n_iter is negative in tranOneOperation from Test file");
         if (model == null) throw new Exception("MLP model is null in tranOneOperation from Test file");
         if (typeOfOperation < 0)
             throw new Exception("typeOfOperation can't be negative in tranOneOperation from Test file");
 
         model.goodAnswers = 0;
 
-        for (int i = 0; i < n_iter; i++) {
+        for (int i = 0; i < epochs; i++) {
 
             int x1 = ThreadLocalRandom.current().nextInt(0, 10);
             int x2 = ThreadLocalRandom.current().nextInt(0, 10);
@@ -253,7 +257,7 @@ public class Test {
 
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Validation Set : ");
-        System.out.println("Accuracy : " + (double) model.goodAnswers / n_iter);
+        System.out.println("Accuracy : " + (double) model.goodAnswers / epochs);
         System.out.println("-------------------------------------------------------------------------");
     }
 
@@ -261,15 +265,15 @@ public class Test {
      * Train method for training our model on all operators.
      * This will generate the training set and will call the method learn.
      *
-     * @param n_iter is the number of iterations that our model will train on data.
+     * @param epochs is the number of iterations that our model will train on data.
      * @param model  MLP model that need to be init manually or with initModel(...) function.
-     * @throws Exception is throw when n_iter is negative or when model is null.
+     * @throws Exception is throw when epochs is negative or when model is null.
      */
-    public static void trainAllOperators(MLP model, int n_iter) throws Exception {
-        if (n_iter < 0) throw new Exception("n_iter is negative in trainAllOperators(...) from Test file");
+    public static void trainAllOperators(MLP model, int epochs) throws Exception {
+        if (epochs < 0) throw new Exception("epochs is negative in trainAllOperators(...) from Test file");
         if (model == null) throw new Exception("MLP model is null in trainAllOperators(...) from Test file");
 
-        for (int i = 0; i < n_iter; i++) {
+        for (int i = 0; i < epochs; i++) {
 
             int x1 = ThreadLocalRandom.current().nextInt(0, 10);
             int x2 = ThreadLocalRandom.current().nextInt(0, 10);
@@ -326,17 +330,17 @@ public class Test {
      * This method will keep track on the number of good predictions by
      * our model and will print at the end the accuracy metric that is the number of good predictions / n_iter.
      *
-     * @param n_iter is the number of iterations that our model will train on data.
+     * @param epochs is the number of iterations that our model will train on data.
      * @param model  MLP model that need to be init manually or with initModel(...) function.
      * @throws Exception is throw when n_iter is negative or when model in null.
      */
-    public static void validationAllOperators(MLP model, int n_iter) throws Exception {
-        if (n_iter < 0) throw new Exception("n_iter is negative");
+    public static void validationAllOperators(MLP model, int epochs) throws Exception {
+        if (epochs < 0) throw new Exception("n_iter is negative");
         if (model == null) throw new Exception("MLP model is null in validationAllOperators(...) from Test file");
 
         model.goodAnswers = 0;
 
-        for (int i = 0; i < n_iter; i++) {
+        for (int i = 0; i < epochs; i++) {
 
 
             int x1 = ThreadLocalRandom.current().nextInt(0, 10);
@@ -389,7 +393,7 @@ public class Test {
 
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Validation Set All Operation: ");
-        System.out.println("Accuracy : " + (double) model.goodAnswers / n_iter);
+        System.out.println("Accuracy : " + (double) model.goodAnswers / epochs);
         System.out.println("-------------------------------------------------------------------------");
     }
 
