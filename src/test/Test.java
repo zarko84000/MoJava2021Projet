@@ -1,4 +1,4 @@
-/**
+/*
  * @Titre :        Test class
  * @Description :  Test class for the train/validation on different operators.
  * @Copyright :    Copyright (c) 2021
@@ -43,10 +43,8 @@ public class Test {
      * If you do the All Operators :
      * outputSize : 91
      *
-     * @param args
-     * @throws Exception
      */
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
 
         /*
         MLP modelAddition = initModel(2, 128, 0.01, new ITransfertFunction[]
@@ -75,6 +73,15 @@ public class Test {
 
     }
 
+    /**
+     * @param nbHiddenLayers numbers of layers
+     * @param hiddenSize    numbers of neurons in layers
+     * @param lr    learning rate
+     * @param tfArray   array of TransfertFunction
+     * @param outputSize    size of the output
+     * @param inputSize     size of the input
+     * @return MLP model
+     */
     public static MLP initModel(int nbHiddenLayers, int hiddenSize, double lr, ITransfertFunction[] tfArray, int outputSize, int inputSize) throws Exception {
         if (nbHiddenLayers <= 0) throw new Exception("nbHiddenLayers is <= 0 in initModel function from Test file");
         if (hiddenSize <= 0) throw new Exception("hiddenSize is <= 0 in initModel function from Test file");
@@ -146,20 +153,20 @@ public class Test {
             model.learn(ytrue);
 
             if (typeOfOperation == 0) {
-                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
             } else if (typeOfOperation == 1) {
-                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
             } else {
                 if (model.input[0] - model.input[1] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
                 }
             }
@@ -178,7 +185,7 @@ public class Test {
         if (model == null) throw new Exception("MLP model is null in tranOneOperation from Test file");
         if (typeOfOperation < 0)
             throw new Exception("typeOfOperation can't be negative in tranOneOperation from Test file");
-        ;
+
         model.goodAnswers = 0;
 
         for (int i = 0; i < n_iter; i++) {
@@ -206,29 +213,29 @@ public class Test {
             model.predicted = model.forward(model.input);
 
             if (typeOfOperation == 0) {
-                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
-                if (model.getMaxIndice(ytrue) == model.getMaxIndice(model.predicted)) {
+                if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
                     model.goodAnswers += 1;
                 }
             } else if (typeOfOperation == 1) {
-                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                if (model.getMaxIndice(ytrue) == model.getMaxIndice(model.predicted)) {
+                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
                     model.goodAnswers += 1;
                 }
             } else {
                 if (model.input[0] - model.input[1] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                    if (model.getMaxIndice(ytrue) == model.getMaxIndice(model.predicted)) {
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
                         model.goodAnswers += 1;
                     }
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                    if (model.getMaxIndice(ytrue) == model.getMaxIndice(model.predicted)) {
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
                         model.goodAnswers += 1;
                     }
 
@@ -282,20 +289,20 @@ public class Test {
             model.learn(ytrue);
 
             if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
             } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
             } else {
                 if (model.input[0] - model.input[1] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
 
                 }
             }
@@ -350,24 +357,24 @@ public class Test {
 
 
             if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (model.getMaxIndice(ytrue) - 9));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue) - 9));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
             } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (model.getMaxIndice(ytrue) - 9));
-                System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue) - 9));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
             } else {
                 if (model.input[0] - model.input[2] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (-model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (-MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (model.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (model.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue)));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
                 }
             }
 
 
             model.predicted = model.forward(model.input);
-            if (model.getMaxIndice(ytrue) == model.getMaxIndice(model.predicted)) {
+            if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
                 model.goodAnswers += 1;
             }
 
