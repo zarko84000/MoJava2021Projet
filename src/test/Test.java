@@ -20,6 +20,7 @@ import transfertFunctions.TransfertFunctionTanh;
 import utils.InitialiseBiasNormal;
 import utils.InitialiseWeightsNormal;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Test {
@@ -34,76 +35,78 @@ public class Test {
      * <p>
      * If you do the Addition :
      * typeOfOperation : 0
-     * outputSize : 19
+     * outputSize : 21
      * <p>
      * If you do the Multiplication :
      * typeOfOperation : 1
-     * outputSize : 82
+     * outputSize : 101
      * <p>
      * If you do the Subtraction:
      * typeOfOperation : 2 or +
-     * outputSize : 19
+     * outputSize : 21
      * <p>
      * If you do the All Operators :
-     * outputSize : 91
+     * outputSize : 111
      *
      * @param args
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
 
-        /*
-        MLP modelAddition = initModel(2, 128, 0.01, new ITransfertFunction[]
-                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 19, 2);
-        trainOneOperator(modelAddition, 10_000, 0);
+        // ACCURACY WITH THIS CONFIG 76.4%
+
+        MLP modelAddition = initModel(1, new int[] {256}, 0.01, new ITransfertFunction[]
+                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 21, 2);
+        trainOneOperator(modelAddition, 2_000_000, 0);
         validationOneOperator(modelAddition, 1_000, 0);
 
-
-        MLP modelMultiplication = initModel(2, 128, 0.01, new ITransfertFunction[]
-                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 82, 2);
-        trainOneOperator(modelMultiplication, 10_000, 1);
+/*
+ // ACCURACY WITH THIS CONFIG 81.7%
+        MLP modelMultiplication = initModel(1, new int[] {256}, 0.01, new ITransfertFunction[]
+                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 101, 2);
+        trainOneOperator(modelMultiplication, 2_000_000, 1);
         validationOneOperator(modelMultiplication, 1_000, 1);
-
-
-        MLP modelSubtraction = initModel(2, 128, 0.01, new ITransfertFunction[]
-                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 19, 2);
-        trainOneOperator(modelSubtraction, 10_000, 2);
+*/
+        /* // ACCURACY WITH THIS CONFIG 74.5%
+        MLP modelSubtraction = initModel(1, new int[] {256}, 0.1, new ITransfertFunction[]
+                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 21, 2);
+        trainOneOperator(modelSubtraction, 2_000_000, 2);
         validationOneOperator(modelSubtraction, 1_000, 2);
         */
+        /* // ACCURACY WITH THIS CONFIG 79.2%
+        MLP modelAll = initModel(1, new int[]{256}, 0.01, new ITransfertFunction[]
+                {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 111, 3);
 
-        MLP modelAll = initModel(1, new int [] {128}, 0.01, new ITransfertFunction[]
-                {new TransfertFunctionLeakyRelu(0.01), new TransfertFunctionSigmoid()}, 91, 3);
-
-        trainAllOperators(modelAll, 1_000_000);
-        validationAllOperators(modelAll, 10_000);
-
+        trainAllOperators(modelAll, 2_000_000);
+        validationAllOperators(modelAll, 1_000);
+*/
     }
 
     /**
      * @param nbHiddenLayers numbers of layers
-     * @param hiddenSize    numbers of neurons in layers
-     * @param lr    learning rate
-     * @param tfArray   array of TransfertFunction
-     * @param outputSize    size of the output
-     * @param inputSize     size of the input
+     * @param hiddenSize     numbers of neurons in layers
+     * @param lr             learning rate
+     * @param tfArray        array of TransfertFunction
+     * @param outputSize     size of the output
+     * @param inputSize      size of the input
      * @return MLP model
      */
     public static MLP initModel(int nbHiddenLayers, int[] hiddenSize, double lr, ITransfertFunction[] tfArray, int outputSize, int inputSize) throws Exception {
         if (nbHiddenLayers <= 0) throw new Exception("nbHiddenLayers is <= 0 in initModel function from Test file");
-        if (nbHiddenLayers+1 != tfArray.length) throw new Exception("nbHiddenLayers+1 != tfArray.length in initModel function from Test file");
+        if (nbHiddenLayers + 1 != tfArray.length)
+            throw new Exception("nbHiddenLayers+1 != tfArray.length in initModel function from Test file");
         if (hiddenSize == null) throw new Exception("hiddenSize is null in initModel function from Test file");
         if (lr < 0) throw new Exception("lr is < 0 in initModel function from Test file");
         if (tfArray == null) throw new Exception("tfArray is null in initModel function from Test file");
-        if (tfArray.length != nbHiddenLayers+1)
-            throw new Exception("tfArray.length != nbHiddenLayers in initModel function from Test file");
+
         if (outputSize <= 0) throw new Exception("outputSize <= 0 in initModel function from Test file");
         if (inputSize <= 0) throw new Exception("inputSize <= 0 in initModel function from Test file");
 
-        for(int i=0; i< tfArray.length; i++) {
+        for (int i = 0; i < tfArray.length; i++) {
             if (tfArray[i] == null) throw new Exception("null object in tfArray from Test.initModel");
         }
 
-        LayerLinear[] layers = new LayerLinear[nbHiddenLayers+1];
+        LayerLinear[] layers = new LayerLinear[nbHiddenLayers + 1];
 
 
         layers[0] = new LayerLinear(
@@ -111,9 +114,9 @@ public class Test {
                 new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[0]
         );
 
-        for (int i = 1; i < nbHiddenLayers ; i++) {
+        for (int i = 1; i < nbHiddenLayers; i++) {
             layers[i] = new LayerLinear(
-                    hiddenSize[i-1], hiddenSize[i], lr,
+                    hiddenSize[i - 1], hiddenSize[i], lr,
                     new InitialiseWeightsNormal(), new InitialiseBiasNormal(), tfArray[i]
             );
         }
@@ -124,60 +127,66 @@ public class Test {
         );
 
 
-
         return new MLP(layers, new LossDifference());
     }
 
     /**
      * @param model           MLP model that need to be init manually or with initModel(...) function.
-     * @param n_iter          Numbers of examples for training our model.
+     * @param epochs          Numbers of examples for training our model.
      * @param typeOfOperation 0 == Addition, 1 == Multiplication and 2 and + is for subtraction.
      * @throws Exception throw when n_iter is negative, MLP model is null or when typeOfOperation is bellow 0.
      */
-    public static void trainOneOperator(MLP model, int n_iter, int typeOfOperation) throws Exception {
-        if (n_iter < 0) throw new Exception("n_iter is negative in tranOneOperation from Test file");
+    public static void trainOneOperator(MLP model, int epochs, int typeOfOperation) throws Exception {
+        if (epochs < 0) throw new Exception("n_iter is negative in tranOneOperation from Test file");
         if (model == null) throw new Exception("MLP model is null in tranOneOperation from Test file");
         if (typeOfOperation < 0)
             throw new Exception("typeOfOperation can't be negative in tranOneOperation from Test file");
 
-        for (int i = 0; i < n_iter; i++) {
-            int x1 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x2 = ThreadLocalRandom.current().nextInt(0, 10);
+        for (int i = 0; i < epochs; i++) {
+            int operand1 = ThreadLocalRandom.current().nextInt(0, 11);
+            int operand2 = ThreadLocalRandom.current().nextInt(0, 11);
 
-            int result;
-            double[] ytrue;
+            int resultOperation;
+            double[] ytrue ;
 
             if (typeOfOperation == 0) {
-                result = x1 + x2;
-                ytrue = new double[19];
-            } else if (typeOfOperation == 1) {
-                result = x1 * x2;
-                ytrue = new double[82];
+                resultOperation = operand1 + operand2;
+                ytrue =  new double[21];
+                ytrue[resultOperation] = 1;
+
+            } else if (typeOfOperation== 1) {
+                resultOperation = operand1 * operand2;
+                ytrue =  new double[101];
+                ytrue[resultOperation ] = 1;
+
+
             } else {
-                result = x1 - x2;
-                ytrue = new double[19];
+                resultOperation = operand1 - operand2;
+                ytrue =  new double[21];
+                ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
+
+
             }
 
-            ytrue[Math.abs(result)] = 1;
 
-            model.input = new double[]{x1, x2};
+            model.input = new double[]{operand1, operand2};
             model.learn(ytrue);
 
             if (typeOfOperation == 0) {
                 System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
             } else if (typeOfOperation == 1) {
                 System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
             } else {
                 if (model.input[0] - model.input[1] < 0) {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
                 } else {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
                 }
             }
@@ -201,56 +210,56 @@ public class Test {
 
         for (int i = 0; i < epochs; i++) {
 
-            int x1 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x2 = ThreadLocalRandom.current().nextInt(0, 10);
+            int operand1 = ThreadLocalRandom.current().nextInt(0, 11);
+            int operand2 = ThreadLocalRandom.current().nextInt(0, 11);
 
-            int result;
-            double[] ytrue;
+            int resultOperation;
+            double[] ytrue ;
 
             if (typeOfOperation == 0) {
-                result = x1 + x2;
-                ytrue = new double[19];
-            } else if (typeOfOperation == 1) {
-                result = x1 * x2;
-                ytrue = new double[82];
+                resultOperation = operand1 + operand2;
+                ytrue =  new double[21];
+                ytrue[resultOperation] = 1;
+
+            } else if (typeOfOperation== 1) {
+                resultOperation = operand1 * operand2;
+                ytrue =  new double[101];
+                ytrue[resultOperation] = 1;
+
+
             } else {
-                result = x1 - x2;
-                ytrue = new double[19];
+                resultOperation = operand1 - operand2;
+                ytrue =  new double[21];
+                ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
+
+
             }
 
-            ytrue[Math.abs(result)] = 1;
 
-            model.input = new double[]{x1, x2};
+            model.input = new double[]{operand1, operand2};
             model.predicted = model.forward(model.input);
 
             if (typeOfOperation == 0) {
-                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
-                if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
-                    model.goodAnswers += 1;
-                }
             } else if (typeOfOperation == 1) {
-                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
-                    model.goodAnswers += 1;
-                }
+                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+
             } else {
-                if (model.input[0] - model.input[1] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                    if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
-                        model.goodAnswers += 1;
-                    }
+                if ((model.input[0] - model.input[1] < 0)) {
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
-                    if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
-                        model.goodAnswers += 1;
-                    }
+                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
                 }
+            }
+
+            if (MLP.getMaxIndice(ytrue) == MLP.getMaxIndice(model.predicted)) {
+                model.goodAnswers += 1;
             }
 
         }
@@ -275,45 +284,48 @@ public class Test {
 
         for (int i = 0; i < epochs; i++) {
 
-            int x1 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x2 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x3 = ThreadLocalRandom.current().nextInt(0, 3);
+            int operand1 = new Random().nextInt(11);
+            int operand2 = new Random().nextInt(11);
+            int operator = new Random().nextInt(3);
 
-            int result;
-            double[] ytrue = new double[91]; // because there is 91 possibility
-            // with 3 operators and 9 different numbers
-            if (x3 == 0) {
-                result = x1 + x2;
-                ytrue[result + 9] = 1;
+            int resultOperation;
+            double[] ytrue = new double[111]; // because there is 111 possibility
+            // with 3 operators and 11 different numbers
 
-            } else if (x3 == 1) {
-                result = x1 * x2;
-                ytrue[result + 9] = 1;
+            if (operator == 0) {
+                resultOperation = operand1 + operand2;
+                ytrue[resultOperation + 10] = 1;
+
+            } else if (operator == 1) {
+                resultOperation = operand1 * operand2;
+                ytrue[resultOperation + 10] = 1;
+
 
             } else {
-                result = x1 - x2;
-                ytrue[Math.abs(result)] = 1;
+                resultOperation = operand1 - operand2;
+                ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
+
 
             }
 
-            model.input = new double[]{x1, x3, x2};
+            model.input = new double[]{operand1, operator, operand2};
             model.learn(ytrue);
 
             if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
             } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
             } else {
-                if (model.input[0] - model.input[1] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                if ((model.input[0] - model.input[2] < 0)) {
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
 
                 }
             }
@@ -343,43 +355,48 @@ public class Test {
         for (int i = 0; i < epochs; i++) {
 
 
-            int x1 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x2 = ThreadLocalRandom.current().nextInt(0, 10);
-            int x3 = ThreadLocalRandom.current().nextInt(0, 3);
+            int operand1 = ThreadLocalRandom.current().nextInt(0, 11);
+            int operand2 = ThreadLocalRandom.current().nextInt(0, 11);
+            int operator = ThreadLocalRandom.current().nextInt(0, 3);
 
-            int result;
-            double[] ytrue = new double[91]; // because there is 91 possibility
+            int resultOperation;
+            double[] ytrue = new double[111]; // because there is 91 possibility
             // with 3 operators and 9 different numbers
-            if (x3 == 0) {
-                result = x1 + x2;
-                ytrue[result + 9] = 1;
+            if (operator == 0) {
+                resultOperation = operand1 + operand2;
+                ytrue[resultOperation + 10] = 1;
 
-            } else if (x3 == 1) {
-                result = x1 * x2;
-                ytrue[result + 9] = 1;
+            } else if (operator == 1) {
+                resultOperation = operand1 * operand2;
+                ytrue[resultOperation + 10] = 1;
+
 
             } else {
-                result = x1 - x2;
-                ytrue[Math.abs(result)] = 1;
+                resultOperation = operand1 - operand2;
+                ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
+
 
             }
 
-            model.input = new double[]{x1, x3, x2};
+            model.input = new double[]{operand1, operator, operand2};
 
 
             if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue) - 9));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+
             } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue) - 9));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+
             } else {
-                if (model.input[0] - model.input[2] < 0) {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (-MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                if ((model.input[0] - model.input[2] < 0)) {
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
                 } else {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss);
+                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+
                 }
             }
 
