@@ -85,6 +85,20 @@ public class Test {
     }
 
     /**
+     * The initModel is an elegant way to initialize an MLP model.
+     * The structure of an Neural network model in our case is :
+     * input layer - hidden layers - output layer
+     * <p>
+     * Example :
+     * MLP modelAll = initModel(1, new int[]{256}, 0.01, new ITransfertFunction[]
+     * {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 111, 3);
+     * <p>
+     * In this case we say that we have 1 hidden layer with 256 neurons. For all the model we have a learning rate of 0.01.
+     * We need to specify the activation function for all the hidden layers / output layer. So, ITransfertFunction[] need
+     * to be size : nbHiddenLayers + 1
+     * outputSize is the number of elements that you want to predict, please refer to the javadoc of the main method.
+     * inputSize same as outputSize.
+     *
      * @param nbHiddenLayers numbers of layers
      * @param hiddenSize     numbers of neurons in layers
      * @param lr             learning rate
@@ -133,6 +147,13 @@ public class Test {
     }
 
     /**
+     * Please refer to the javadoc of the main method for typeOfOperation.
+     * Numbers of epochs is the number of elements that you will feed into your model.
+     * Example :
+     * epochs = 1_000_000 is 1_000_000 of samples that will be used for train your model.
+     * <p>
+     * This method train and display information on terminal.
+     *
      * @param model           MLP model that need to be init manually or with initModel(...) function.
      * @param epochs          Numbers of examples for training our model.
      * @param typeOfOperation 0 == Addition, 1 == Multiplication and 2 and + is for subtraction.
@@ -143,6 +164,7 @@ public class Test {
         if (model == null) throw new Exception("MLP model is null in tranOneOperation from Test file");
         if (typeOfOperation < 0)
             throw new Exception("typeOfOperation can't be negative in tranOneOperation from Test file");
+        long start = System.currentTimeMillis();
 
         for (int i = 0; i < epochs; i++) {
             int operand1 = ThreadLocalRandom.current().nextInt(0, 11);
@@ -176,27 +198,42 @@ public class Test {
 
             if (typeOfOperation == 0) {
                 System.out.println(model.input[0] + " + " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "train set");
 
             } else if (typeOfOperation == 1) {
                 System.out.println(model.input[0] + " * " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "train set");
 
             } else {
                 if (model.input[0] - model.input[1] < 0) {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (-MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "train set");
                 } else {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (MLP.getMaxIndice(ytrue)));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "train set");
 
                 }
             }
         }
-
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.println("Training Set: ");
+        System.out.println("Time : " + (System.currentTimeMillis() - start) + " ms");
+        System.out.println("-------------------------------------------------------------------------");
     }
 
     /**
+     * This method will help you to see if your model is doing good on new data or not.
+     *
+     * Please refer to the javadoc of the main method for typeOfOperation.
+     * Numbers of epochs is the number of elements that you will feed into your model.
+     *
+     * Example :
+     * epochs = 1_000_000 is 1_000_000 of samples that will be used for train your model.
+     * <p>
+     *
+     * This method validation display information on terminal about the accuracy of our model that is the number of good
+     * answers/numbers of epochs.
+     *
      * @param model           MLP model that need to be init manually or with initModel(...) function.
      * @param epochs          Numbers of examples for training our model.
      * @param typeOfOperation 0 == Addition, 1 == Multiplication and 2 and + is for subtraction.
@@ -209,6 +246,7 @@ public class Test {
             throw new Exception("typeOfOperation can't be negative in tranOneOperation from Test file");
 
         model.goodAnswers = 0;
+        long start = System.currentTimeMillis();
 
         for (int i = 0; i < epochs; i++) {
 
@@ -243,19 +281,19 @@ public class Test {
 
             if (typeOfOperation == 0) {
                 System.out.println(model.input[0] + " + " + model.input[1] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "validation set");
 
             } else if (typeOfOperation == 1) {
                 System.out.println(model.input[0] + " * " + model.input[1] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "validation set");
 
             } else {
                 if ((model.input[0] - model.input[1] < 0)) {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "validation set");
                 } else {
                     System.out.println(model.input[0] + " - " + model.input[1] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
+                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%" + "\t\t" + "validation set");
 
                 }
             }
@@ -269,12 +307,13 @@ public class Test {
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Validation Set : ");
         System.out.println("Accuracy : " + (double) model.goodAnswers / epochs);
+        System.out.println("Time : " + (System.currentTimeMillis() - start) + " ms");
         System.out.println("-------------------------------------------------------------------------");
     }
 
     /**
      * Train method for training our model on all operators.
-     * This will generate the training set and will call the method learn.
+     * This will generate the training set and will call the method learn and display.
      *
      * @param epochs is the number of iterations that our model will train on data.
      * @param model  MLP model that need to be init manually or with initModel(...) function.
@@ -387,9 +426,9 @@ public class Test {
     /**
      * Method that is used for display information about training/validation on terminal.
      *
-     * @param model MLP model
-     * @param epochs    numbers of epochs
-     * @param i iterator i
+     * @param model           MLP model
+     * @param epochs          numbers of epochs
+     * @param i               iterator i
      * @param resultOperation result of the mathematical expression.
      * @throws Exception when model is null, epochs < 0 or i < 0
      */
