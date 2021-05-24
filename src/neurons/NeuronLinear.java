@@ -9,6 +9,7 @@
 package neurons;
 
 import exceptions.*;
+
 import transfertFunctions.ITransfertFunction;
 import utils.IInitialiseBias;
 import utils.IInitialiseWeights;

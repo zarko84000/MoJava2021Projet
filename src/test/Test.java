@@ -48,38 +48,40 @@ public class Test {
      * If you do the All Operators :
      * outputSize : 111
      *
-     * @param args
-     * @throws Exception
+     * @param args nothing.
+     * @throws Exception when one Exception is throw in one the method.
      */
     public static void main(String[] args) throws Exception {
 
-        // ACCURACY WITH THIS CONFIG 76.4%
-
-        MLP modelAddition = initModel(1, new int[] {256}, 0.01, new ITransfertFunction[]
+        /*
+                // ACCURACY WITH THIS CONFIG 81.1%
+        MLP modelAddition = initModel(1, new int[]{256}, 0.01, new ITransfertFunction[]
                 {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 21, 2);
         trainOneOperator(modelAddition, 2_000_000, 0);
         validationOneOperator(modelAddition, 1_000, 0);
+        */
 
-/*
- // ACCURACY WITH THIS CONFIG 81.7%
+        /*
+         // ACCURACY WITH THIS CONFIG 81.7%
         MLP modelMultiplication = initModel(1, new int[] {256}, 0.01, new ITransfertFunction[]
                 {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 101, 2);
         trainOneOperator(modelMultiplication, 2_000_000, 1);
         validationOneOperator(modelMultiplication, 1_000, 1);
-*/
+        */
         /* // ACCURACY WITH THIS CONFIG 74.5%
         MLP modelSubtraction = initModel(1, new int[] {256}, 0.1, new ITransfertFunction[]
                 {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 21, 2);
         trainOneOperator(modelSubtraction, 2_000_000, 2);
         validationOneOperator(modelSubtraction, 1_000, 2);
         */
-        /* // ACCURACY WITH THIS CONFIG 79.2%
+        /*
+        // ACCURACY WITH THIS CONFIG 79.2%
         MLP modelAll = initModel(1, new int[]{256}, 0.01, new ITransfertFunction[]
                 {new TransfertFunctionTanh(), new TransfertFunctionSigmoid()}, 111, 3);
 
         trainAllOperators(modelAll, 2_000_000);
         validationAllOperators(modelAll, 1_000);
-*/
+        */
     }
 
     /**
@@ -102,8 +104,8 @@ public class Test {
         if (outputSize <= 0) throw new Exception("outputSize <= 0 in initModel function from Test file");
         if (inputSize <= 0) throw new Exception("inputSize <= 0 in initModel function from Test file");
 
-        for (int i = 0; i < tfArray.length; i++) {
-            if (tfArray[i] == null) throw new Exception("null object in tfArray from Test.initModel");
+        for (ITransfertFunction tf : tfArray) {
+            if (tf == null) throw new Exception("null object in tfArray from Test.initModel");
         }
 
         LayerLinear[] layers = new LayerLinear[nbHiddenLayers + 1];
@@ -147,22 +149,22 @@ public class Test {
             int operand2 = ThreadLocalRandom.current().nextInt(0, 11);
 
             int resultOperation;
-            double[] ytrue ;
+            double[] ytrue;
 
             if (typeOfOperation == 0) {
                 resultOperation = operand1 + operand2;
-                ytrue =  new double[21];
+                ytrue = new double[21];
                 ytrue[resultOperation] = 1;
 
-            } else if (typeOfOperation== 1) {
+            } else if (typeOfOperation == 1) {
                 resultOperation = operand1 * operand2;
-                ytrue =  new double[101];
-                ytrue[resultOperation ] = 1;
+                ytrue = new double[101];
+                ytrue[resultOperation] = 1;
 
 
             } else {
                 resultOperation = operand1 - operand2;
-                ytrue =  new double[21];
+                ytrue = new double[21];
                 ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
 
 
@@ -214,22 +216,22 @@ public class Test {
             int operand2 = ThreadLocalRandom.current().nextInt(0, 11);
 
             int resultOperation;
-            double[] ytrue ;
+            double[] ytrue;
 
             if (typeOfOperation == 0) {
                 resultOperation = operand1 + operand2;
-                ytrue =  new double[21];
+                ytrue = new double[21];
                 ytrue[resultOperation] = 1;
 
-            } else if (typeOfOperation== 1) {
+            } else if (typeOfOperation == 1) {
                 resultOperation = operand1 * operand2;
-                ytrue =  new double[101];
+                ytrue = new double[101];
                 ytrue[resultOperation] = 1;
 
 
             } else {
                 resultOperation = operand1 - operand2;
-                ytrue =  new double[21];
+                ytrue = new double[21];
                 ytrue[Math.abs(Math.abs(resultOperation)) + 10] = 1;
 
 
@@ -281,7 +283,7 @@ public class Test {
     public static void trainAllOperators(MLP model, int epochs) throws Exception {
         if (epochs < 0) throw new Exception("epochs is negative in trainAllOperators(...) from Test file");
         if (model == null) throw new Exception("MLP model is null in trainAllOperators(...) from Test file");
-
+        long start = System.currentTimeMillis();
         for (int i = 0; i < epochs; i++) {
 
             int operand1 = new Random().nextInt(11);
@@ -311,28 +313,12 @@ public class Test {
             model.input = new double[]{operand1, operator, operand2};
             model.learn(ytrue);
 
-            if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-            } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-            } else {
-                if ((model.input[0] - model.input[2] < 0)) {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-                } else {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-                }
-            }
-
-
+            display(model, epochs, i, resultOperation, "training set");
         }
-
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.println("Training Set: ");
+        System.out.println("Time : " + (System.currentTimeMillis() - start) + " ms");
+        System.out.println("-------------------------------------------------------------------------");
     }
 
 
@@ -349,7 +335,7 @@ public class Test {
     public static void validationAllOperators(MLP model, int epochs) throws Exception {
         if (epochs < 0) throw new Exception("n_iter is negative");
         if (model == null) throw new Exception("MLP model is null in validationAllOperators(...) from Test file");
-
+        long start = System.currentTimeMillis();
         model.goodAnswers = 0;
 
         for (int i = 0; i < epochs; i++) {
@@ -381,24 +367,7 @@ public class Test {
             model.input = new double[]{operand1, operator, operand2};
 
 
-            if (model.input[1] == 0) {
-                System.out.println(model.input[0] + " + " + model.input[2] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-            } else if (model.input[1] == 1) {
-                System.out.println(model.input[0] + " * " + model.input[2] + " = " + (resultOperation));
-                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-            } else {
-                if ((model.input[0] - model.input[2] < 0)) {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-                } else {
-                    System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
-                    System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / (double) epochs) + "%");
-
-                }
-            }
+            display(model, epochs, i, resultOperation, "validation set");
 
 
             model.predicted = model.forward(model.input);
@@ -411,7 +380,42 @@ public class Test {
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Validation Set All Operation: ");
         System.out.println("Accuracy : " + (double) model.goodAnswers / epochs);
+        System.out.println("Time : " + (System.currentTimeMillis() - start) + " ms");
         System.out.println("-------------------------------------------------------------------------");
+    }
+
+    /**
+     * Method that is used for display information about training/validation on terminal.
+     *
+     * @param model MLP model
+     * @param epochs    numbers of epochs
+     * @param i iterator i
+     * @param resultOperation result of the mathematical expression.
+     * @throws Exception when model is null, epochs < 0 or i < 0
+     */
+    private static void display(MLP model, double epochs, int i, int resultOperation, String type) throws Exception {
+        if (model == null) throw new Exception("model is null in display from Test");
+        if (epochs < 0) throw new Exception("epochs<0 in display from Test");
+        if (i < 0) throw new Exception("i<0 in display from Test");
+
+        if (model.input[1] == 0) {
+            System.out.println(model.input[0] + " + " + model.input[2] + " = " + (resultOperation));
+            System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / epochs) + "%" + "\t\t" + type);
+
+        } else if (model.input[1] == 1) {
+            System.out.println(model.input[0] + " * " + model.input[2] + " = " + (resultOperation));
+            System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted) - 10) + " , loss=" + model.loss + " \t\t epoch: " + (i / epochs) + "%" + "\t\t" + type);
+
+        } else {
+            if ((model.input[0] - model.input[2] < 0)) {
+                System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (-MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / epochs) + "%" + "\t\t" + type);
+            } else {
+                System.out.println(model.input[0] + " - " + model.input[2] + " = " + (resultOperation));
+                System.out.println("ypred = " + (MLP.getMaxIndice(model.predicted)) + " , loss=" + model.loss + " \t\t epoch: " + (i / epochs) + "%" + "\t\t" + type);
+
+            }
+        }
     }
 
 }

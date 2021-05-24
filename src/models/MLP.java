@@ -51,6 +51,10 @@ public class MLP implements IModel {
             throw new AiException("ILoss lossFunction is null in ", ErrorLevel.MODEL, ErrorMethode.CONSTRUCTOR);
         if (layers.length == 0)
             throw new AiException("LayerLinear[] layers is empty in ", ErrorLevel.MODEL, ErrorMethode.CONSTRUCTOR);
+        for(LayerLinear layer : layers)
+        {
+            if (layer == null) throw new AiException("an element of LayerLinear[] is null in ", ErrorLevel.MODEL, ErrorMethode.CONSTRUCTOR);
+        }
 
         this.layers = layers;
         this.lossFunction = lossFunction;
@@ -109,7 +113,7 @@ public class MLP implements IModel {
     /**
      * Calculate loss for a vector dy.
      *
-     * @param dy
+     * @param dy backward of the loss
      * @return loss/=dy.length
      * @throws AiExceptionLoss throw when dy is null or if dy is empty.
      */
